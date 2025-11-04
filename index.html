@@ -213,6 +213,22 @@ html, body {
   visibility: hidden !important;
   pointer-events: none !important;
 }
+
+    .content-box {
+  max-width: 900px;              /* keeps it neat on desktop */
+  width: 90%;                    /* adapts to smaller screens */
+  margin: 0 auto;                /* centers horizontally */
+  padding: 2rem 1rem;            /* soft breathing space */
+  box-sizing: border-box;
+  text-align: center;            /* keeps inner text aligned */
+}
+
+/* Optional: for more elegance on large screens */
+@media (min-width: 1000px) {
+  .content-box {
+    padding: 3rem 2rem;
+  }
+}
   </style>
 </head>
 
@@ -235,7 +251,8 @@ html, body {
       <button data-lang="tr"><img src="flags/tr.png" alt="Turkish Flag" class="flag-img"></button>
     </div>
   </div>
-
+  
+<div class="content-box">
   <div class="content">
     <p>Welcome to Hotel Lilia, Golden Sands!</p>
     <div class="categories">
@@ -264,6 +281,8 @@ html, body {
       <h2>SWIMMING POOLS</h2>
       <p>Relax at our rooftop pool with a panoramic view of the Black Sea.</p>
     </div>
+  </div>
+</div>
 
     <div align="center" style="font-size:0.8rem;color:#5e5e5e;"><br><br><br></be>This page has been automatically translated to your selected language from English via Google Translate. For lack of information due to a mistranslation, please, contact the front desk for clarification!<br><br>Hotel Lilia 2026<br><br><br></div>
 
@@ -548,6 +567,7 @@ document.querySelectorAll('.categories button').forEach(btn => {
 
 </body>
 </html>
+
 
 
 
