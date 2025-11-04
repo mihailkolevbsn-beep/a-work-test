@@ -247,6 +247,20 @@ body {
   <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
   <script>
+
+    btn.addEventListener("click", () => {
+  const lang = btn.getAttribute("data-lang");
+  triggerTranslation(lang);
+
+  // Wait for translation to apply before scrolling
+  setTimeout(() => {
+    const content = document.querySelector(".content");
+    if (content) {
+      content.scrollIntoView({ behavior: "smooth" });
+    }
+  }, 1500); // delay 1.5s to let Google finish
+});
+    
     // Wait for Google Translate to fully load before enabling buttons
     function waitForTranslateDropdown(callback) {
       const check = setInterval(() => {
@@ -285,6 +299,7 @@ body {
   </script>
 </body>
 </html>
+
 
 
 
