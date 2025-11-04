@@ -172,45 +172,46 @@
     justify-self: center;
   }
 }
-    /* Hide Google Translate top banner */
-.goog-te-banner-frame.skiptranslate {
+/* ----- FORCE-HIDE GOOGLE TRANSLATE UI ----- */
+/* Banner iframe + any iframe that looks like Google Translate */
+iframe.goog-te-banner-frame,
+iframe[src*="translate"],
+.goog-te-banner-frame,
+.goog-te-balloon-frame,
+.goog-te-menu-frame {
   display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  width: 0 !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
 }
 
-/* Remove extra space left by the banner */
-body {
-  top: 0px !important;
-}
-
-/* Hide the Google Translate logo / widget */
+/* any visible gadget / logo */
 .goog-logo-link,
-.goog-te-gadget {
-  display: none !important;
-}
-
-/* Prevent layout shift during translation */
-body {
-  position: static !important;
-}
-
-    /* === Remove Google Translate banner and prevent layout jump === */
-.goog-te-banner-frame.skiptranslate {
+.goog-te-gadget,
+.goog-te-combo,
+#goog-gt-tt,
+#goog-gt-tt .activity-root {
   display: none !important;
   visibility: hidden !important;
 }
 
-body {
-  top: 0px !important;
-  position: static !important;
+/* prevent layout shifts (Google sometimes pushes body down) */
+html, body {
+  top: 0 !important;
   transform: none !important;
+  position: static !important;
 }
 
-/* Also hide the floating translation tooltip that sometimes appears */
+/* hide tooltips and text highlights inserted by Google */
 .goog-tooltip,
 .goog-tooltip div,
-.goog-text-highlight {
+.goog-text-highlight,
+#goog-gt-tt {
   display: none !important;
   visibility: hidden !important;
+  pointer-events: none !important;
 }
   </style>
 </head>
@@ -353,21 +354,165 @@ body {
   observer.observe(document.body, { childList: true, subtree: true });
 </script>
 
-    <script>
-  // Re-hide Google bar if it reappears
-  const hideGoogleBar = () => {
-    const frame = document.querySelector('.goog-te-banner-frame');
-    if (frame) frame.style.display = 'none';
-    document.body.style.top = '0px';
-  };
+<script>
+/* ---------- Helper: force remove google frames / nodes ---------- */
+function removeGoogleUI() {
+  // remove iframes that look like Google Translate UI
+  document.querySelectorAll('iframe.goog-te-banner-frame, iframe[src*="translate"], .goog-te-banner-frame, .goog-te-balloon-frame, .goog-te-menu-frame').forEach(node => {
+    try { node.remove(); } catch(e) { node.style.display = 'none'; }
+  });
 
-  // Observe DOM changes and re-hide if necessary
-  const observer = new MutationObserver(hideGoogleBar);
-  observer.observe(document.body, { childList: true, subtree: true });
+  // hide gadgets/logos
+  document.querySelectorAll('.goog-logo-link, .goog-te-gadget, .goog-tooltip, #goog-gt-tt, .goog-text-highlight').forEach(n => {
+    try { n.remove(); } catch(e) { n.style.display = 'none'; }
+  });
+
+  // reset any inline body top offset Google added
+  document.body.style.top = '0px';
+}
+
+/* run once at load */
+removeGoogleUI();
+
+/* ---------- Observe DOM and re-hide anything Google reinjects ---------- */
+const observer = new MutationObserver((mutations) => {
+  for (const m of mutations) {
+    if (m.addedNodes && m.addedNodes.length) {
+      // quick heuristic: if an iframe or element with goog- prefix gets added, remove/hide it
+      for (const n of m.addedNodes) {
+        if (n.tagName === 'IFRAME' || (n.className && String(n.className).includes('goog'))) {
+          removeGoogleUI();
+        }
+      }
+    }
+  }
+});
+observer.observe(document.documentElement || document.body, { childList: true, subtree: true });
+
+/* ---------- Cookie / storage helpers for resetting Google Translate ---------- */
+function clearGoogTransCookie() {
+  // Clear cookie by setting expired cookie at root path
+  document.cookie = "googtrans=; path=/; domain=" + location.hostname + "; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+  // Some builds store it without domain attribute
+  document.cookie = "googtrans=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+  // Try clearing common storage keys
+  try { localStorage.removeItem('googtrans'); } catch(e){}
+  try { sessionStorage.removeItem('googtrans'); } catch(e){}
+}
+
+// attempt to set googtrans to english marker for immediate reset behavior
+function setGoogTransToEnglish() {
+  try {
+    // value format is "/source/target" — setting to '/en' or '/en/en' sometimes helps
+    document.cookie = "googtrans=/auto/en; path=/;";
+    localStorage.setItem('googtrans', '/auto/en');
+    sessionStorage.setItem('googtrans', '/auto/en');
+  } catch(e){}
+}
+
+/* ---------- Wait for the Google select dropdown to exist ---------- */
+function waitForTranslateDropdown(callback, timeout = 10000) {
+  const start = Date.now();
+  const interval = setInterval(() => {
+    const select = document.querySelector('.goog-te-combo');
+    if (select && select.options && select.options.length > 0) {
+      clearInterval(interval);
+      setTimeout(() => callback(select), 600); // give it a moment
+      return;
+    }
+    if (Date.now() - start > timeout) {
+      clearInterval(interval);
+      console.warn('Google Translate dropdown did not appear within timeout.');
+    }
+  }, 300);
+}
+
+/* ---------- Trigger translation robustly ---------- */
+function triggerTranslation(lang) {
+  const select = document.querySelector('.goog-te-combo');
+  if (!select) {
+    console.warn('Translation dropdown not present yet.');
+    return;
+  }
+
+  if (lang === 'en') {
+    // Clear cookie/storage first to avoid sticky translate behavior
+    clearGoogTransCookie();
+    setTimeout(() => {
+      // sometimes blanking the select triggers reset
+      select.selectedIndex = 0;
+      select.dispatchEvent(new Event('change'));
+      // also try to set to english marker
+      setGoogTransToEnglish();
+      setTimeout(() => {
+        // final fallback: reload the page so Google state clears for sure
+        location.reload();
+      }, 400);
+    }, 250);
+    return;
+  }
+
+  // find best matching option value (exact or prefix)
+  let foundIndex = -1;
+  for (let i = 0; i < select.options.length; i++) {
+    const val = select.options[i].value;
+    if (val === lang || val.startsWith(lang + '-') || val.endsWith('-' + lang)) {
+      foundIndex = i;
+      break;
+    }
+  }
+  if (foundIndex === -1) {
+    // fallback: match by language name
+    for (let i = 0; i < select.options.length; i++) {
+      const txt = (select.options[i].textContent || '').toLowerCase();
+      if (txt.includes(lang.toLowerCase()) || (lang === 'it' && txt.includes('italian'))) {
+        foundIndex = i;
+        break;
+      }
+    }
+  }
+  if (foundIndex === -1) {
+    console.warn('Requested language not found in Google Translate options:', lang);
+    return;
+  }
+
+  // set selection and dispatch change
+  select.selectedIndex = foundIndex;
+  select.dispatchEvent(new Event('change'));
+
+  // ensure the UI is hidden and scroll happens after translation
+  removeGoogleUI();
+  setTimeout(() => {
+    removeGoogleUI();
+    const content = document.querySelector('.content');
+    if (content) content.scrollIntoView({ behavior: 'smooth' });
+  }, 1400);
+}
+
+/* ---------- Wire up buttons after translate dropdown is ready ---------- */
+waitForTranslateDropdown((select) => {
+  // attach click listeners to flags
+  document.querySelectorAll('.flag-grid button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const lang = btn.getAttribute('data-lang');
+      triggerTranslation(lang);
+    });
+  });
+
+  // change-btn (reset to english) behaviour
+  const changeBtn = document.getElementById('change');
+  if (changeBtn) changeBtn.addEventListener('click', () => {
+    triggerTranslation('en');
+  });
+
+  // final defensive clean
+  setTimeout(removeGoogleUI, 200);
+});
 </script>
  
 </body>
 </html>
+
 
 
 
