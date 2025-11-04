@@ -239,10 +239,10 @@ html, body {
   <div class="content">
     <p>Welcome to Hotel Lilia, Golden Sands!</p>
     <div class="categories">
-      <button>PARKING</button>
-      <button>MINI-BAR</button>
-      <button>MEALS & MEAL PLANS</button>
-      <button>SWIMMING POOLS</button>
+      <button data-target="#parking">PARKING</button>
+      <button data-target="#minibar">MINI-BAR</button>
+      <button data-target="#meals">MEALS & MEAL PLANS</button>
+      <button data-target="#pool">SWIMMING POOLS</button>
     </div>
 
     <div class="section" id="parking">
@@ -533,9 +533,22 @@ document.getElementById("change").addEventListener("click", function() {
   }, 700);
 });
 </script>
- 
+
+<script>
+document.querySelectorAll('.categories button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const targetId = btn.getAttribute('data-target');
+    const targetEl = document.querySelector(targetId);
+    if (targetEl) {
+      targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+</script>
+
 </body>
 </html>
+
 
 
 
