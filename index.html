@@ -192,6 +192,26 @@ body {
 body {
   position: static !important;
 }
+
+    /* === Remove Google Translate banner and prevent layout jump === */
+.goog-te-banner-frame.skiptranslate {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+body {
+  top: 0px !important;
+  position: static !important;
+  transform: none !important;
+}
+
+/* Also hide the floating translation tooltip that sometimes appears */
+.goog-tooltip,
+.goog-tooltip div,
+.goog-text-highlight {
+  display: none !important;
+  visibility: hidden !important;
+}
   </style>
 </head>
 
@@ -358,6 +378,7 @@ body {
 </script>
 </body>
 </html>
+
 
 
 
