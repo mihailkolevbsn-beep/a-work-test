@@ -376,8 +376,22 @@ body {
     }
   });
 </script>
+
+  <script>
+  // Re-hide Google bar if it reappears
+  const hideGoogleBar = () => {
+    const frame = document.querySelector('.goog-te-banner-frame');
+    if (frame) frame.style.display = 'none';
+    document.body.style.top = '0px';
+  };
+
+  // Observe DOM changes and re-hide if necessary
+  const observer = new MutationObserver(hideGoogleBar);
+  observer.observe(document.body, { childList: true, subtree: true });
+</script>
 </body>
 </html>
+
 
 
 
