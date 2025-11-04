@@ -265,39 +265,102 @@ body {
 
   <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
-  <script>
-    // Wait for Google Translate to fully load before enabling buttons
-    function waitForTranslateDropdown(callback) {
-      const check = setInterval(() => {
-        const select = document.querySelector('.goog-te-combo');
-        if (select && select.options.length > 1) {
-          clearInterval(check);
-          callback(select);
-        }
-      }, 500);
-    }
-
-    // Perform translation
-    function triggerTranslation(lang) {
-      const select = document.querySelector('.goog-te-combo');
-      if (!select) return;
-      select.value = lang;
-      select.dispatchEvent(new Event('change'));
-    }
-
-    // Initialize buttons after dropdown is ready
+ <script>
+  // Robust wait for the Google Translate dropdown
   function waitForTranslateDropdown(callback) {
+    const maxChecks = 25; // about ~10 seconds max (25 * 400ms)
+    let checks = 0;
     const check = setInterval(() => {
       const select = document.querySelector('.goog-te-combo');
+      checks++;
       if (select && select.options.length > 1) {
         clearInterval(check);
-        setTimeout(() => callback(select), 800); // give it a moment more
+        // Give Google a little extra time to finish internal setup
+        setTimeout(() => callback(select), 700);
+        return;
+      }
+      if (checks > maxChecks) {
+        clearInterval(check);
+        console.warn('Google Translate dropdown did not appear in time.');
       }
     }, 400);
-  };
-  </script>
+  }
+
+  // Trigger translation by language code (e.g. 'bg', 'de', 'it', 'en')
+  function triggerTranslation(lang) {
+    const select = document.querySelector('.goog-te-combo');
+    if (!select) {
+      console.warn('Translate select not found.');
+      return;
+    }
+
+    // If user wants English, do a reload to reset (Google often treats 'en' as page base)
+    if (lang === 'en') {
+      // slight delay so UI feels responsive
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      setTimeout(() => location.reload(), 400);
+      return;
+    }
+
+    // Find option by value exactly, fallback to startsWith (some builds prefix values)
+    let foundIndex = -1;
+    for (let i = 0; i < select.options.length; i++) {
+      const val = select.options[i].value;
+      if (val === lang || val.startsWith(lang + '-')) { // match 'it' or 'it-*'
+        foundIndex = i;
+        break;
+      }
+    }
+
+    if (foundIndex === -1) {
+      // As a last resort try matching by option text containing the language code or name
+      for (let i = 0; i < select.options.length; i++) {
+        const txt = select.options[i].textContent.toLowerCase();
+        if (txt.includes(lang.toLowerCase()) || txt.includes('italian') && lang === 'it') {
+          foundIndex = i;
+          break;
+        }
+      }
+    }
+
+    if (foundIndex === -1) {
+      console.warn('Requested language not found in Google Translate dropdown:', lang);
+      return;
+    }
+
+    // set and dispatch change
+    select.selectedIndex = foundIndex;
+    select.dispatchEvent(new Event('change'));
+
+    // Wait for the translation to take effect before scrolling content into view
+    setTimeout(() => {
+      const content = document.querySelector('.content');
+      if (content) content.scrollIntoView({ behavior: 'smooth' });
+    }, 1400); // tweak this number if translations are slower on your connection
+  }
+
+  // Attach listeners after Google Translate dropdown is ready
+  waitForTranslateDropdown(() => {
+    // Wire up flags -> translation
+    document.querySelectorAll('.flag-grid button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const lang = btn.getAttribute('data-lang');
+        triggerTranslation(lang);
+      });
+    });
+
+    // Change-language button (resets to English)
+    const changeBtn = document.getElementById('change');
+    if (changeBtn) {
+      changeBtn.addEventListener('click', () => {
+        triggerTranslation('en');
+      });
+    }
+  });
+</script>
 </body>
 </html>
+
 
 
 
