@@ -156,10 +156,33 @@
         font-size: 1.2rem;
       }
     }
+
+    /* Hide Google Translate top banner */
+.goog-te-banner-frame.skiptranslate {
+  display: none !important;
+}
+
+/* Remove extra space left by the banner */
+body {
+  top: 0px !important;
+}
+
+/* Hide the Google Translate logo / widget */
+.goog-logo-link,
+.goog-te-gadget {
+  display: none !important;
+}
+
+/* Prevent layout shift during translation */
+body {
+  position: static !important;
+}
   </style>
 </head>
 
 <body>
+
+  
   <div class="container">
     <h1>WELCOME TO HOTEL LILIA, GOLDEN SANDS<br>PLEASE SELECT YOUR LANGUAGE</h1>
 
@@ -206,7 +229,7 @@
       <p>Relax at our rooftop pool with a panoramic view of the Black Sea.</p>
     </div>
 
-    <button id="change" class="change-btn">CHANGE LANGUAGE</button>
+    <div align="center"><button id="change" class="change-btn">CHANGE LANGUAGE</button></div>
   </div>
 
   <div id="google_translate_element" style="display:none;"></div>
@@ -261,3 +284,4 @@
   </script>
 </body>
 </html>
+
