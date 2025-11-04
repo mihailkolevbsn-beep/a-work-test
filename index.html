@@ -248,18 +248,7 @@ body {
 
   <script>
 
-    btn.addEventListener("click", () => {
-  const lang = btn.getAttribute("data-lang");
-  triggerTranslation(lang);
-
-  // Wait for translation to apply before scrolling
-  setTimeout(() => {
-    const content = document.querySelector(".content");
-    if (content) {
-      content.scrollIntoView({ behavior: "smooth" });
-    }
-  }, 1500); // delay 1.5s to let Google finish
-});
+    
     
     // Wait for Google Translate to fully load before enabling buttons
     function waitForTranslateDropdown(callback) {
@@ -299,6 +288,7 @@ body {
   </script>
 </body>
 </html>
+
 
 
 
