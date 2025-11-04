@@ -184,7 +184,7 @@ body {
 
   
   <div class="container">
-    <h1>WELCOME TO HOTEL LILIA, GOLDEN SANDS<br><br>PLEASE SELECT YOUR LANGUAGE</h1>
+    <h1>WELCOME TO HOTEL LILIA, GOLDEN SANDS!<br><br> PLEASE SELECT YOUR LANGUAGE</h1>
 
     <div class="flag-grid" align="center">
       <button data-lang="bg"><img src="flags/bg.png" alt="Bulgarian Flag" class="flag-img"></button>
@@ -267,14 +267,15 @@ body {
     }
 
     // Initialize buttons after dropdown is ready
-    waitForTranslateDropdown(() => {
-      document.querySelectorAll(".flag-grid button").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          const lang = btn.getAttribute("data-lang");
-          triggerTranslation(lang);
-          window.scrollTo({ top: 0, behavior: "smooth" });
-        });
-      });
+  function waitForTranslateDropdown(callback) {
+    const check = setInterval(() => {
+      const select = document.querySelector('.goog-te-combo');
+      if (select && select.options.length > 1) {
+        clearInterval(check);
+        setTimeout(() => callback(select), 800); // give it a moment more
+      }
+    }, 400);
+  }
 
       document.getElementById("change").addEventListener("click", () => {
         triggerTranslation('en');
@@ -284,6 +285,7 @@ body {
   </script>
 </body>
 </html>
+
 
 
 
