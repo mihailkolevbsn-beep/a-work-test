@@ -38,6 +38,7 @@
       display: grid;
       grid-template-columns: repeat(5, 1fr);
       gap: 1.5rem;
+      justify-self:center;
     }
 
     .flag-grid button {
@@ -158,6 +159,19 @@
       }
     }
 
+    @media (max-width: 768px) {
+  .flag-grid button:last-child {
+    grid-column: 2; /* centers it in the middle column */
+    justify-self: center;
+  }
+}
+
+    @media (max-width: 480px) {
+  .flag-grid button:last-child {
+    grid-column: 2; /* centers it in the middle column */
+    justify-self: center;
+  }
+}
     /* Hide Google Translate top banner */
 .goog-te-banner-frame.skiptranslate {
   display: none !important;
@@ -283,11 +297,3 @@ body {
   </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
