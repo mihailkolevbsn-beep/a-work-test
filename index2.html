@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hotel Lilia - Golden Sands</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: #fff;
+      color: #000;
+      text-align: center;
+      scroll-behavior: smooth;
+      overflow-x: hidden;
+    }
+
+    .container {
+      background: url(flags/background.png) center/cover no-repeat;
+      min-height: 940px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      padding-top: 8rem;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      font-family: Arsenal, sans-serif;
+      color: #fff;
+      text-shadow: 1px 1px 1px #000;
+    }
+
+    .flag-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1.5rem;
+    }
+
+    .flag-grid button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .flag-grid button:hover {
+      transform: scale(1.2);
+    }
+
+    .flag-img {
+      width: 80px;
+      height: 50px;
+      object-fit: cover;
+      border-radius: 6px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+      border: 1.5px dotted #fff;
+    }
+
+    .content {
+      min-height: 100vh;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: start;
+      padding: 5rem 1rem;
+      font-size: 1.8rem;
+      color: #000;
+    }
+
+    .categories {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 1.5rem;
+      font-size: 1.2rem;
+    }
+
+    .categories button {
+      background: #ab8731;
+      border: 1px solid #ab8731;
+      border-radius: 12px;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      color: #fff;
+    }
+
+    .categories button:hover {
+      background: #c0a051;
+      box-shadow: 0 1px 1px rgba(0, 0, 0, 0.15);
+    }
+
+    .section {
+      margin-top: 8rem;
+      font-size: 1rem;
+      text-align: left;
+      max-width: 800px;
+    }
+
+    .section h2 {
+      margin-bottom: 0.5rem;
+      font-size: 1.5rem;
+    }
+
+    .change-btn {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      background: #ab8731;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .change-btn:hover {
+      background: #c0a051;
+    }
+
+    @media (max-width: 768px) {
+      .flag-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      .flag-img {
+        width: 65px;
+        height: 40px;
+      }
+      h1 {
+        font-size: 1.4rem;
+        padding: 0 1rem;
+      }
+      .content {
+        padding: 3rem 1rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .flag-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+      }
+      .flag-img {
+        width: 60px;
+        height: 38px;
+      }
+      h1 {
+        font-size: 1.2rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>WELCOME TO HOTEL LILIA, GOLDEN SANDS<br>PLEASE SELECT YOUR LANGUAGE</h1>
+
+    <div class="flag-grid" align="center">
+      <button data-lang="bg"><img src="flags/bg.png" alt="Bulgarian Flag" class="flag-img"></button>
+      <button data-lang="en"><img src="flags/en.png" alt="English Flag" class="flag-img"></button>
+      <button data-lang="de"><img src="flags/de.png" alt="German Flag" class="flag-img"></button>
+      <button data-lang="ro"><img src="flags/ro.png" alt="Romanian Flag" class="flag-img"></button>
+      <button data-lang="uk"><img src="flags/uk.png" alt="Ukrainian Flag" class="flag-img"></button>
+      <button data-lang="cs"><img src="flags/cs.png" alt="Czech Flag" class="flag-img"></button>
+      <button data-lang="pl"><img src="flags/pl.png" alt="Polish Flag" class="flag-img"></button>
+      <button data-lang="ru"><img src="flags/ru.png" alt="Russian Flag" class="flag-img"></button>
+      <button data-lang="he"><img src="flags/he.png" alt="Hebrew Flag" class="flag-img"></button>
+      <button data-lang="tr"><img src="flags/tr.png" alt="Turkish Flag" class="flag-img"></button>
+    </div>
+  </div>
+
+  <div class="content">
+    <p>Welcome to Hotel Lilia, Golden Sands!</p>
+    <div class="categories">
+      <button>PARKING</button>
+      <button>MINI-BAR</button>
+      <button>MEALS & MEAL PLANS</button>
+      <button>SWIMMING POOLS</button>
+    </div>
+
+    <div class="section" id="parking">
+      <h2>PARKING</h2>
+      <p>Spacious and secure parking available for all guests, monitored 24/7.</p>
+    </div>
+
+    <div class="section" id="minibar">
+      <h2>MINI-BAR</h2>
+      <p>Enjoy a fully stocked mini-bar with local and international beverages.</p>
+    </div>
+
+    <div class="section" id="meals">
+      <h2>MEALS & MEAL PLANS</h2>
+      <p>Indulge in our breakfast buffet and à la carte menu crafted by top chefs.</p>
+    </div>
+
+    <div class="section" id="pool">
+      <h2>SWIMMING POOLS</h2>
+      <p>Relax at our rooftop pool with a panoramic view of the Black Sea.</p>
+    </div>
+
+    <button id="change" class="change-btn">CHANGE LANGUAGE</button>
+  </div>
+
+  <div id="google_translate_element" style="display:none;"></div>
+
+  <script type="text/javascript">
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement({
+        pageLanguage: 'en',
+        includedLanguages: 'bg,de,ro,uk,cs,pl,ru,he,tr',
+        autoDisplay: false
+      }, 'google_translate_element');
+    }
+  </script>
+
+  <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+  <script>
+    // Wait for Google Translate to fully load before enabling buttons
+    function waitForTranslateDropdown(callback) {
+      const check = setInterval(() => {
+        const select = document.querySelector('.goog-te-combo');
+        if (select && select.options.length > 1) {
+          clearInterval(check);
+          callback(select);
+        }
+      }, 500);
+    }
+
+    // Perform translation
+    function triggerTranslation(lang) {
+      const select = document.querySelector('.goog-te-combo');
+      if (!select) return;
+      select.value = lang;
+      select.dispatchEvent(new Event('change'));
+    }
+
+    // Initialize buttons after dropdown is ready
+    waitForTranslateDropdown(() => {
+      document.querySelectorAll(".flag-grid button").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const lang = btn.getAttribute("data-lang");
+          triggerTranslation(lang);
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+      });
+
+      document.getElementById("change").addEventListener("click", () => {
+        triggerTranslation('en');
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+    });
+  </script>
+</body>
+</html>
